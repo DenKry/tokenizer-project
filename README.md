@@ -8,7 +8,7 @@ Custom tokenizer implementations including Space-based, WordPiece, and BERT toke
 tokenizer/
 ├── src/
 │   └── tokenize/
-│       ├── tokenizers.py                   # SpaceTokenizer, WordPieceTokenizer
+│       ├── scratch_bert_tokenizer.py       # SpaceTokenizer, WordPieceTokenizer
 │       └── pretrained_bert_tokenizer.py    # TokenizerBERT wrapper
 ├── main.py                                 # Usage examples
 ├── vocab.txt                               # BERT vocabulary file
