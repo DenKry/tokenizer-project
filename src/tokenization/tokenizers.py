@@ -79,18 +79,18 @@ class SpaceTokenizer:
         attn_mask = self.create_attention_mask(padded)
         token_type_ids = self.create_token_type_ids(padded)
         
-        result = {
+        out = {
             'input_ids': padded,
             'attention_mask': attn_mask,
             'token_type_ids': token_type_ids
         }
         
         if return_tensors == 'pt':
-            result['input_ids'] = torch.tensor(result['input_ids'])
-            result['attention_mask'] = torch.tensor(result['attention_mask'])
-            result['token_type_ids'] = torch.tensor(result['token_type_ids'])
+            out['input_ids'] = torch.tensor(out['input_ids'])
+            out['attention_mask'] = torch.tensor(out['attention_mask'])
+            out['token_type_ids'] = torch.tensor(out['token_type_ids'])
         
-        return result
+        return out
     
     def get_max_length(self, sequences):
         if self.max_len is not None:
