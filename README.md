@@ -7,9 +7,10 @@ Custom tokenizer implementations including Space-based, WordPiece, and BERT toke
 ```
 tokenizer/
 ├── src/
-│   └── tokenize/
-│       ├── scratch_bert_tokenizer.py       # SpaceTokenizer, WordPieceTokenizer
-│       └── pretrained_bert_tokenizer.py    # TokenizerBERT wrapper
+│   └── tokenization/
+│       ├── bpe_tokenizer.py                # BPETokenizer
+│       ├── pretrained_bert_tokenizer.py    # TokenizerBERT wrapper
+│       └── scratch_bert_tokenizer.py       # SpaceTokenizer, WordPieceTokenizer
 ├── main.py                                 # Usage examples
 ├── vocab.txt                               # BERT vocabulary file
 └── README.md
@@ -66,6 +67,50 @@ Subword tokenization using WordPiece algorithm (like BERT).
 - Splits unknown words into smaller known pieces
 - Adds `##` prefix to continuation pieces
 - Falls back to `[UNK]` if no split found
+
+---
+
+### BPETokenizer
+Byte-Pair Encoding tokenizer trained from scratch on raw text.
+
+**Features:**
+- Trains directly on UTF-8 byte sequences — no external vocabulary needed
+- Learns merge rules iteratively from the training corpus
+- Configurable vocab size
+- PyTorch tensor support on encode/decode
+
+
+**Parameters:**
+- `vocab_size` (int, default=276): Target vocabulary size (must be > 256)
+- `return_tensors` (str, default='pt'): Return format ('pt' for PyTorch tensor, None for list)
+
+**Methods:**
+- `train(text)`: Learn BPE merge rules from a text string
+- `encode(text, return_tensors=None)`: Encode text to token IDs
+- `decode(ids, skip_special_tokens=True)`: Decode token IDs back to text
+- `get_stats(ids)`: Count byte-pair frequencies in a token sequence
+- `merge(ids, pair, idx)`: Apply a single merge rule to a token sequence
+
+**BPE Algorithm:**
+- Initialises vocabulary with all 256 raw bytes
+- Repeatedly finds the most frequent adjacent byte pair
+- Merges that pair into a new token and records the rule
+- Continues until `vocab_size` is reached
+- Encoding replays learned merges in the same order
+
+**Example:**
+```python
+from src.tokenization.bpe_tokenizer import BPETokenizer
+
+tokenizer = BPETokenizer(vocab_size=300)
+tokenizer.train("hello world hello world")
+
+encoded = tokenizer.encode("hello")       # torch.Tensor([...])
+decoded = tokenizer.decode(encoded)       # "hello"
+
+# List output
+encoded_list = tokenizer.encode("hello", return_tensors=None)  # [...]
+```
 
 ---
 
